@@ -1,0 +1,26 @@
+# Nombre del archivo de salida
+output_file="reporte_recursos.txt"
+
+# Encabezado de las columnas en el archivo de salida
+echo "Tiempo | %CPU Libre | %Memoria Libre | Espacio en Disco Libre" > $output_file
+
+# Bucle para ejecutar el monitoreo cada 60 segundos durante 5 minutos
+for ((i=1; i<=5; i++)); do
+    # Captura del tiempo actual
+    tiempo=$(date +"%H:%M:%S")
+
+    # Captura del porcentaje total de CPU libre 
+    cpu_libre=$(top -bn1 | grep "Cpu(s)" | awk '{print 100 - $2}')
+
+    # Captura del porcentaje de memoria libre (a partir de `free -h`)
+    memoria_libre=$(free | grep Mem | awk '{printf "%.2f", ($4/$2) * 100}')
+
+    # Captura del espacio libre en disco
+    disco_libre=$(df -h / | grep / | awk '{print $4}')
+
+    # Escribir los datos en el archivo en el formato deseado
+    echo "$tiempo | $cpu_libre | $memoria_libre | $disco_libre" >> $output_file
+
+    # Espera 60 segundos antes de la siguiente captura
+    sleep 60
+done
